@@ -1,0 +1,170 @@
+/* Design tokens — the single source of visual values for the whole shell.
+   Phase 4B.7B expands this into a complete token set: colour, typography,
+   spacing, radii, elevation, motion, layout metrics and breakpoints. Every value
+   used by base.css / layout.css / components.css / financial.css resolves to a
+   token here, so a visual value is never repeated across files.
+   No web font, no CDN and no external asset is referenced: the Arabic font stack
+   is made of fonts already present on the machine. */
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------- surfaces */
+  --color-bg: #eef1f6;
+  --color-bg-soft: #e7ecf4;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f6fa;
+  --color-surface-sunken: #eaeef5;
+  --color-border: #e3e8f0;
+  --color-border-subtle: #eef1f7;
+  --color-border-strong: #ccd5e2;
+
+  /* -------------------------------------------------------------- text */
+  --color-text: #17202e;
+  --color-text-soft: #3f4b5d;
+  --color-text-muted: #6c7989;
+  --color-text-inverse: #ffffff;
+
+  /* ------------------------------------------------------------- brand */
+  --color-primary: #0f5132;
+  --color-primary-hover: #0b3f27;
+  --color-primary-strong: #08301d;
+  --color-primary-soft: #e4f0ea;
+  --color-primary-soft-strong: #a9d3c1;
+  --color-accent: #1f6feb;
+  --color-accent-soft: #e8f0fe;
+
+  /* ----------------------------------------- dark shell (sidebar frame) */
+  --color-sidebar-bg: #10243a;
+  --color-sidebar-bg-strong: #0b1a2b;
+  --color-sidebar-border: rgba(255, 255, 255, 0.10);
+  --color-sidebar-text: #d7e1ee;
+  --color-sidebar-text-muted: #8fa3ba;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.07);
+  --color-sidebar-active: rgba(255, 255, 255, 0.13);
+  --color-sidebar-active-text: #ffffff;
+
+  /* Financial visual language (presentation only – no financial rule here) */
+  --color-credit: #0f7a4a;
+  --color-credit-soft: #e2f4ea;
+  --color-debit: #b02a37;
+  --color-debit-soft: #fbe9eb;
+  --color-cash: #1f6feb;
+  --color-cash-soft: #e7f0ff;
+  --color-noncash: #6d47d9;
+  --color-noncash-soft: #efecfe;
+
+  --color-positive: #0f7a4a;
+  --color-positive-soft: #e2f4ea;
+  --color-negative: #b02a37;
+  --color-negative-soft: #fbe9eb;
+  --color-cancelled: #6c7989;
+  --color-cancelled-soft: #eceff3;
+
+  /* --------------------------------------------------------- feedback */
+  --color-alert-info: #1f6feb;
+  --color-alert-info-soft: #e7f0ff;
+  --color-alert-success: #0f7a4a;
+  --color-alert-success-soft: #e2f4ea;
+  --color-alert-warning: #9a6700;
+  --color-alert-warning-soft: #fff4d6;
+  --color-alert-danger: #b02a37;
+  --color-alert-danger-soft: #fbe9eb;
+
+  /* ------------------------------------------------------- typography */
+  --font-family-base: "Segoe UI", "Tahoma", "Noto Naskh Arabic", "Dubai", "Arial", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.9375rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.75rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --line-height-base: 1.7;
+  --line-height-tight: 1.35;
+  --letter-spacing-title: -0.01em;
+
+  /* ----------------------------------------------------------- spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* ------------------------------------------------------------ radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* -------------------------------------------------------- elevation */
+  --shadow-xs: 0 1px 1px rgba(16, 32, 48, 0.04);
+  --shadow-sm: 0 1px 2px rgba(16, 32, 48, 0.06), 0 1px 3px rgba(16, 32, 48, 0.04);
+  --shadow-md: 0 2px 6px rgba(16, 32, 48, 0.06), 0 8px 20px rgba(16, 32, 48, 0.06);
+  --shadow-lg: 0 12px 32px rgba(16, 32, 48, 0.14);
+  --shadow-focus: 0 0 0 3px var(--color-accent-soft);
+
+  /* ---------------------------------------------------- layout metrics */
+  --sidebar-width: 268px;
+  --header-height: 68px;
+  --content-max-width: 1480px;
+  --control-height: 38px;
+  --control-height-sm: 32px;
+
+  /* Breakpoints — declared as tokens for reference; the media queries below use
+     the same literal values because CSS custom properties cannot be used in a
+     media query condition. */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 820px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+
+  /* ------------------------------------------------------------- motion */
+  --transition-fast: 140ms ease;
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ------------------------------------------------------------ layers */
+  --z-header: 20;
+  --z-backdrop: 30;
+  --z-drawer: 40;
+  --z-modal: 60;
+}
+
+/* Phase 4B.25 — visual refinement tokens. Values are presentation-only. */
+:root {
+  --color-bg: #f1f4f8;
+  --color-bg-soft: #e9eef5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7f9fc;
+  --color-surface-sunken: #edf1f6;
+  --color-border: #e1e7ef;
+  --color-border-subtle: #edf1f6;
+  --color-border-strong: #cbd5e1;
+  --color-text: #172437;
+  --color-text-soft: #425168;
+  --color-text-muted: #718096;
+  --color-primary: #12634a;
+  --color-primary-hover: #0e503c;
+  --color-primary-strong: #0a3c2d;
+  --color-primary-soft: #e5f3ed;
+  --color-primary-soft-strong: #b6dfce;
+  --color-accent: #2867c7;
+  --color-accent-soft: #eaf2ff;
+  --sidebar-width: 276px;
+  --header-height: 72px;
+  --content-max-width: 1560px;
+  --control-height: 42px;
+  --radius-md: 11px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --shadow-sm: 0 1px 3px rgba(21, 37, 58, .045), 0 2px 8px rgba(21, 37, 58, .035);
+  --shadow-md: 0 5px 18px rgba(21, 37, 58, .075);
+  --shadow-lg: 0 18px 48px rgba(11, 26, 43, .18);
+}

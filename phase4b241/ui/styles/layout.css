@@ -1,0 +1,322 @@
+/* Application shell layout: sidebar + header + content area.
+   Phase 4B.7B restyles the shell only. Every structural contract the JavaScript
+   and the tests rely on is preserved verbatim:
+     .app-shell[data-sidebar="closed"|"open"] · .app-sidebar (#app-sidebar)
+     .app-main · .app-header · .app-content (#app-content) · .app-backdrop
+     [data-sidebar-toggle][aria-controls="app-sidebar"][aria-expanded]
+     .app-nav__link[data-route-id][aria-current="page"] · .app-nav__icon
+   No physical left/right property is used: the shell is written with logical
+   properties so RTL and LTR both lay out correctly. */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* ------------------------------------------------------------- sidebar */
+.app-sidebar {
+  grid-column: 1;
+  background: var(--color-sidebar-bg);
+  background-image: linear-gradient(180deg, var(--color-sidebar-bg) 0%, var(--color-sidebar-bg-strong) 100%);
+  border-inline-end: 1px solid var(--color-sidebar-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  inset-block-start: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: var(--z-header);
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4);
+  min-height: var(--header-height);
+  border-block-end: 1px solid var(--color-sidebar-border);
+}
+
+.app-sidebar__logo {
+  width: 40px; height: 40px; flex: 0 0 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(140deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: var(--color-text-inverse);
+  display: grid; place-items: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-xs);
+}
+
+.app-sidebar__title { display: flex; flex-direction: column; min-width: 0; }
+.app-sidebar__title strong { font-size: var(--font-size-md); color: var(--color-sidebar-active-text); font-weight: var(--font-weight-bold); }
+.app-sidebar__title span { font-size: var(--font-size-xs); color: var(--color-sidebar-text-muted); }
+
+.app-nav { padding: var(--space-3) var(--space-3) var(--space-5); }
+.app-nav__group + .app-nav__group { margin-block-start: var(--space-4); }
+
+.app-nav__group-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--color-sidebar-text-muted);
+  padding: var(--space-2) var(--space-3);
+  margin-block-end: var(--space-1);
+}
+
+.app-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  margin-block-end: 2px;
+  border-radius: var(--radius-md);
+  border-inline-start: 3px solid transparent;
+  color: var(--color-sidebar-text);
+  font-size: var(--font-size-sm);
+  position: relative;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+.app-nav__link:hover { background: var(--color-sidebar-hover); color: var(--color-sidebar-active-text); text-decoration: none; }
+.app-nav__link[aria-current="page"] {
+  background: var(--color-sidebar-active);
+  border-inline-start-color: var(--color-primary-soft-strong);
+  color: var(--color-sidebar-active-text);
+  font-weight: var(--font-weight-medium);
+}
+.app-nav__icon {
+  width: 22px; flex: 0 0 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  text-align: center;
+  color: currentColor;
+  opacity: 0.9;
+}
+.app-nav__icon svg { width: 18px; height: 18px; display: block; }
+.app-nav__link[aria-current="page"] .app-nav__icon { opacity: 1; }
+
+/* --------------------------------------------------------- main column */
+.app-main { grid-column: 2; display: flex; flex-direction: column; min-width: 0; }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--header-height);
+  padding: var(--space-3) var(--space-5);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(180%) blur(8px);
+  border-block-end: 1px solid var(--color-border);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-header);
+}
+
+.app-header__titles { display: flex; flex-direction: column; min-width: 0; }
+.app-header__titles h1 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.app-header__subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.app-header__actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* The settings badge keeps its plain-text contract: ui/app.js replaces its
+   textContent, so the visual accent is added with CSS only. */
+.app-header__actions .badge {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-soft);
+  padding: 5px var(--space-3);
+  font-weight: var(--font-weight-medium);
+}
+.app-header__actions .badge::before {
+  content: "";
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--color-primary);
+  display: inline-block;
+  margin-inline-end: 6px;
+}
+.app-shell[data-settings="error"] .app-header__actions .badge::before { background: var(--color-alert-danger); }
+
+.app-content {
+  padding: var(--space-5);
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  min-width: 0;
+}
+.app-content:focus { outline: none; }
+
+.app-header .sidebar-toggle { display: none; }
+.app-header .sidebar-toggle { order: 1; }
+.app-header .app-header__titles { order: 2; }
+.app-header .app-header__actions { order: 3; }
+
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 26, 43, 0.5);
+  backdrop-filter: blur(1px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+  z-index: var(--z-backdrop);
+}
+
+/* ------------------------------------------------------------ utility */
+.grid { display: grid; gap: var(--space-4); }
+.grid--cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stack { display: flex; flex-direction: column; gap: var(--space-4); }
+.row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.row--between { justify-content: space-between; }
+.divider { height: 1px; background: var(--color-border); border: 0; margin-block: var(--space-4); }
+
+/* --------------------------------------------------- responsive rules */
+@media (max-width: 1024px) {
+  .grid--cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid--cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 820px) {
+  .app-shell { grid-template-columns: minmax(0, 1fr); }
+
+  .app-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--sidebar-width);
+    max-width: 86vw;
+    transform: translateX(100%);
+    transition: transform var(--transition-base);
+    z-index: var(--z-drawer);
+    box-shadow: var(--shadow-lg);
+    visibility: hidden;
+  }
+  html[dir="rtl"] .app-sidebar { transform: translateX(100%); }
+  .app-shell[data-sidebar="open"] .app-sidebar,
+  html[dir="rtl"] .app-shell[data-sidebar="open"] .app-sidebar { transform: translateX(0); visibility: visible; }
+
+  .app-shell[data-sidebar="open"] .app-backdrop { opacity: 1; pointer-events: auto; }
+
+  .app-main { grid-column: 1; }
+  .app-header .sidebar-toggle { display: inline-flex; }
+  .app-header { padding-inline: var(--space-4); gap: var(--space-2); }
+  .app-content { padding: var(--space-4); }
+  .grid--cols-2, .grid--cols-3, .grid--cols-4 { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .app-header__subtitle { display: none; }
+  .app-header__actions .badge { font-size: var(--font-size-xs); padding: 4px var(--space-2); }
+  .app-content { padding: var(--space-3); }
+}
+
+/* ---------------------------------------------------------------------------
+   Phase 4B.16 correction — the breadcrumb of a child destination.
+   `.app-breadcrumb` had no rule anywhere in the stylesheets, so it rendered as
+   an unstyled block: inside the narrow `.app-header__titles` column its link,
+   its chevron and the current page wrapped onto five lines and the header grew
+   from 68px to 243px on the customer-account route. The rules below keep it on
+   a single line and let the titles column take the free space, so the header
+   returns to its normal height while every element stays visible.
+   The element only exists on destinations that hang off a navigation item, so
+   no other screen is touched.
+   --------------------------------------------------------------------------- */
+.app-header__titles { flex: 1 1 auto; }
+
+.app-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: var(--font-size-xs);
+  line-height: 1.1;
+  color: var(--color-text-muted);
+}
+.app-breadcrumb__link,
+.app-breadcrumb__current {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-breadcrumb__link {
+  flex: 0 1 auto;
+  color: var(--color-text-soft);
+  text-decoration: none;
+}
+.app-breadcrumb__link:hover,
+.app-breadcrumb__link:focus-visible { color: var(--color-primary); text-decoration: underline; }
+.app-breadcrumb__sep { flex: 0 0 auto; display: inline-flex; align-items: center; color: var(--color-text-soft); }
+.app-breadcrumb__sep svg { width: 12px; height: 12px; display: block; }
+.app-breadcrumb__current { flex: 0 1 auto; color: var(--color-text); font-weight: var(--font-weight-medium); }
+
+/* A header that carries a breadcrumb holds one line more. The tighter block
+   padding keeps its total height equal to --header-height instead of letting it
+   grow; `:has()` scopes it, so a header without a breadcrumb keeps the original
+   padding and every other screen is unchanged. */
+.app-header:has(.app-breadcrumb) { padding-block: var(--space-1); }
+
+/* ---------------------------------------------------------------------------
+   Phase 4B.25 — refined application shell. Existing DOM and route contracts
+   remain unchanged; these rules improve hierarchy, density and responsiveness.
+   --------------------------------------------------------------------------- */
+.app-shell { background: radial-gradient(ellipse at 84% 0%, rgba(216, 229, 244, .42), transparent 34%), var(--color-bg); }
+.app-sidebar { background-image: linear-gradient(165deg, #142d49 0%, #10243a 52%, #0b1a2b 100%); }
+.app-sidebar__brand { min-height: 82px; padding-inline: 22px; }
+.app-sidebar__logo { width: 44px; height: 44px; flex-basis: 44px; border-radius: 14px; background: linear-gradient(145deg, #1c8a68, #0f513b); box-shadow: 0 8px 20px rgba(0,0,0,.2), inset 0 1px rgba(255,255,255,.18); }
+.app-sidebar__title strong { font-size: 15px; letter-spacing: -.02em; }
+.app-sidebar__title span { margin-block-start: 2px; }
+.app-nav { padding: 18px 13px 28px; }
+.app-nav__group + .app-nav__group { margin-block-start: 22px; }
+.app-nav__group-title { padding-inline: 14px; margin-block-end: 7px; font-size: 10px; font-weight: 800; letter-spacing: .06em; opacity: .82; }
+.app-nav__link { min-height: 44px; padding: 9px 13px; gap: 12px; border-inline-start-width: 3px; border-radius: 11px; font-size: 13px; }
+.app-nav__icon { width: 23px; flex-basis: 23px; }
+.app-nav__icon svg { width: 19px; height: 19px; stroke-width: 1.8; }
+.app-nav__link[aria-current="page"] { background: linear-gradient(90deg, rgba(42, 133, 101, .24), rgba(255,255,255,.09)); border-inline-start-color: #62d2a7; box-shadow: inset 0 0 0 1px rgba(255,255,255,.045); }
+.app-nav__link[aria-current="page"] .app-nav__icon { color: #8ce0bd; }
+.app-main { min-height: 100vh; }
+.app-header { min-height: var(--header-height); padding-inline: 28px; background: rgba(255,255,255,.88); border-block-end-color: rgba(207,217,229,.78); box-shadow: 0 3px 14px rgba(23,36,55,.025); }
+.app-header__titles h1 { font-size: 17px; letter-spacing: -.02em; }
+.app-header__subtitle { margin-block-start: 3px; }
+.app-header__actions { gap: 9px; }
+.app-header__actions .badge { min-height: 32px; }
+.app-content { padding: 28px; }
+.app-user-chip { gap: 7px !important; padding: 5px 10px !important; background: #f3f6fa !important; border-color: #e1e7ef !important; }
+.app-user-chip__dot { width: 7px; height: 7px; border-radius: 50%; background: #16966b; display: inline-block; }
+.app-user-chip[data-user-role="employee"] .app-user-chip__dot { background: #3478d4; }
+.app-user-chip__name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+.app-user-chip__role { color: var(--color-text-muted); border-inline-start: 1px solid var(--color-border-strong); padding-inline-start: 7px; }
+.app-logout { min-height: 34px; }
+
+@media (max-width: 1024px) {
+  .app-content { padding: 22px; }
+  .app-header { padding-inline: 22px; }
+}
+@media (max-width: 820px) {
+  .app-header { min-height: 66px; padding-inline: 16px; }
+  .app-content { padding: 18px; }
+  .app-sidebar__brand { min-height: 72px; }
+}
+@media (max-width: 560px) {
+  .app-header { gap: 8px; }
+  .app-header__titles h1 { font-size: 15px; }
+  .app-header__actions { gap: 5px; }
+  .app-user-chip__name { max-width: 82px; }
+  .app-user-chip__role { display: none; }
+  .app-logout { padding-inline: 9px !important; }
+  .app-content { padding: 13px; }
+}

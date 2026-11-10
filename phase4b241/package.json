@@ -1,0 +1,13 @@
+{
+  "name": "customer-accounts-local",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Customer Accounts - Local-First Web Application (Phase 3: Foundation & Core Data Layer)",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.5"
+  }
+}

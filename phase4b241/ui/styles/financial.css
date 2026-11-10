@@ -1,0 +1,43 @@
+/* Financial visual language — presentation classes only.
+   They carry no financial rule, calculation or direction decision.
+   Phase 4B.7B restyles these classes through the same selectors: the meaning of
+   every colour is unchanged (credit = green, debit = red, cash = blue,
+   non-cash = violet, cancelled = grey) and colour is never the only carrier of
+   meaning — each figure keeps its sign, its text label and its legend entry. */
+.amount { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.amount--credit { color: var(--color-credit); font-weight: var(--font-weight-medium); }
+.amount--debit { color: var(--color-debit); font-weight: var(--font-weight-medium); }
+.amount--cash-in { color: var(--color-cash); }
+.amount--cash-out { color: var(--color-cash); }
+.amount--noncash { color: var(--color-noncash); }
+.amount--positive { color: var(--color-positive); font-weight: var(--font-weight-bold); }
+.amount--negative { color: var(--color-negative); font-weight: var(--font-weight-bold); }
+.amount--zero { color: var(--color-text-muted); }
+.amount--cancelled { color: var(--color-cancelled); text-decoration: line-through; }
+
+.ledger-row--cancelled { opacity: 0.62; }
+.ledger-row--cancelled td { color: var(--color-text-muted); }
+
+.marker { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-inline-end: var(--space-2); }
+.marker--credit { background: var(--color-credit); }
+.marker--debit { background: var(--color-debit); }
+.marker--cash { background: var(--color-cash); }
+.marker--noncash { background: var(--color-noncash); }
+.marker--cancelled { background: var(--color-cancelled); }
+
+.financial-legend {
+  display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5);
+  font-size: var(--font-size-xs); color: var(--color-text-muted);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.financial-legend > * { display: inline-flex; align-items: center; }
+
+/* Phase 4B.7B — additive emphasis for the money columns inside a ledger row.
+   Presentation only: it changes weight and alignment, never a value or a sign. */
+.table--numeric .amount,
+.table td .amount { font-weight: var(--font-weight-medium); }
+.table th.amount, .table th .amount { font-weight: var(--font-weight-medium); }
+.amount--negative::before { content: ""; }

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لقطة شاشة إضافة عميل</title>
+<style>
+/* ===== tokens.css ===== */
+/* Design tokens — the single source of visual values for the whole shell. */
+:root {
+  /* Colour */
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f0f3f7;
+  --color-border: #dfe4ec;
+  --color-border-strong: #c6cfdd;
+
+  --color-text: #1d2733;
+  --color-text-muted: #5d6b7e;
+  --color-text-inverse: #ffffff;
+
+  --color-primary: #1f5f4b;
+  --color-primary-soft: #e6f2ee;
+  --color-primary-hover: #17483a;
+
+  --color-accent: #2f6fed;
+  --color-accent-soft: #e8f0fe;
+
+  /* Financial visual language (presentation only – no financial rules here) */
+  --color-credit: #157347;
+  --color-credit-soft: #e6f4ec;
+  --color-debit: #b02a37;
+  --color-debit-soft: #fbe9eb;
+  --color-cash: #0d6efd;
+  --color-cash-soft: #e7f0ff;
+  --color-noncash: #7a5af8;
+  --color-noncash-soft: #efecfe;
+
+  --color-positive: #157347;
+  --color-positive-soft: #e6f4ec;
+  --color-negative: #b02a37;
+  --color-negative-soft: #fbe9eb;
+  --color-cancelled: #6c757d;
+  --color-cancelled-soft: #eceff3;
+
+  --color-alert-info: #0d6efd;
+  --color-alert-info-soft: #e7f0ff;
+  --color-alert-success: #157347;
+  --color-alert-success-soft: #e6f4ec;
+  --color-alert-warning: #9a6700;
+  --color-alert-warning-soft: #fff4d6;
+  --color-alert-danger: #b02a37;
+  --color-alert-danger-soft: #fbe9eb;
+
+  /* Typography */
+  --font-family-base: "Segoe UI", "Tahoma", "Noto Naskh Arabic", "Arial", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.9375rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --line-height-base: 1.7;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(29, 39, 51, 0.06);
+  --shadow-md: 0 4px 14px rgba(29, 39, 51, 0.08);
+  --shadow-lg: 0 12px 32px rgba(29, 39, 51, 0.12);
+
+  --sidebar-width: 264px;
+  --header-height: 64px;
+  --transition-fast: 140ms ease;
+}
+
+/* ===== base.css ===== */
+/* Base reset and document-level typography. RTL-first. */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* The hidden attribute is authoritative: no display rule in the design system
+   (.modal-backdrop { display: grid }, .grid, .flex, ...) may override it, so a
+   hidden element is never rendered visibly. */
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: var(--font-weight-bold); line-height: 1.35; }
+h1 { font-size: var(--font-size-2xl); }
+h2 { font-size: var(--font-size-xl); }
+h3 { font-size: var(--font-size-lg); }
+h4 { font-size: var(--font-size-md); }
+p { margin: 0 0 var(--space-3); }
+p:last-child { margin-bottom: 0; }
+ul, ol { margin: 0; padding-inline-start: var(--space-5); }
+
+a { color: var(--color-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button { font-family: inherit; font-size: inherit; }
+
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.text-muted { color: var(--color-text-muted); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-xs { font-size: var(--font-size-xs); }
+.no-margin { margin: 0; }
+
+/* ===== layout.css ===== */
+/* Application shell layout: sidebar + header + content area. */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  grid-column: 1;
+  background: var(--color-surface);
+  border-inline-end: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  inset-block-start: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  min-height: var(--header-height);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.app-sidebar__logo {
+  width: 36px; height: 36px; flex: 0 0 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: grid; place-items: center;
+  font-weight: var(--font-weight-bold);
+}
+
+.app-sidebar__title { display: flex; flex-direction: column; }
+.app-sidebar__title strong { font-size: var(--font-size-md); }
+.app-sidebar__title span { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+.app-nav { padding: var(--space-3) var(--space-3) var(--space-5); }
+.app-nav__group-title {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+
+.app-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.app-nav__link:hover { background: var(--color-surface-muted); text-decoration: none; }
+.app-nav__link[aria-current="page"] {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+.app-nav__icon { width: 20px; text-align: center; flex: 0 0 20px; }
+
+.app-main { grid-column: 2; display: flex; flex-direction: column; min-width: 0; }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--header-height);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+}
+
+.app-header__titles { display: flex; flex-direction: column; min-width: 0; }
+.app-header__titles h1 { font-size: var(--font-size-lg); }
+.app-header__subtitle { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.app-header__actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--space-2); }
+
+.app-content { padding: var(--space-5); flex: 1; }
+
+.sidebar-toggle { display: none; }
+
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(29, 39, 51, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+  z-index: 30;
+}
+
+.grid { display: grid; gap: var(--space-4); }
+.grid--cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stack { display: flex; flex-direction: column; gap: var(--space-4); }
+.row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.row--between { justify-content: space-between; }
+
+@media (max-width: 1024px) {
+  .grid--cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid--cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 820px) {
+  .app-shell { grid-template-columns: 1fr; }
+
+  .app-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--sidebar-width);
+    transform: translateX(100%);
+    transition: transform var(--transition-fast);
+    z-index: 40;
+    box-shadow: var(--shadow-lg);
+  }
+  html[dir="rtl"] .app-sidebar { transform: translateX(100%); }
+  .app-shell[data-sidebar="open"] .app-sidebar,
+  html[dir="rtl"] .app-shell[data-sidebar="open"] .app-sidebar { transform: translateX(0); }
+
+  .app-shell[data-sidebar="open"] .app-backdrop { opacity: 1; pointer-events: auto; }
+
+  .app-main { grid-column: 1; }
+  .sidebar-toggle { display: inline-flex; }
+  .app-content { padding: var(--space-4); }
+  .grid--cols-2, .grid--cols-3, .grid--cols-4 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ===== components.css ===== */
+/* Shared components: cards, buttons, inputs, selects, tables, badges, alerts,
+   modal, loading, empty and error states. */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.card__header {
+  padding: var(--space-4) var(--space-5);
+  border-block-end: 1px solid var(--color-border);
+  display: flex; align-items: center; gap: var(--space-3); justify-content: space-between;
+}
+.card__title { font-size: var(--font-size-md); font-weight: var(--font-weight-medium); }
+.card__body { padding: var(--space-5); }
+.card__footer {
+  padding: var(--space-4) var(--space-5);
+  border-block-start: 1px solid var(--color-border);
+  display: flex; gap: var(--space-3); justify-content: flex-end;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.btn:hover { background: var(--color-border); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+
+.btn--primary { background: var(--color-primary); color: var(--color-text-inverse); }
+.btn--primary:hover { background: var(--color-primary-hover); }
+
+.btn--outline { background: transparent; border-color: var(--color-border-strong); }
+.btn--outline:hover { background: var(--color-surface-muted); }
+
+.btn--ghost { background: transparent; }
+.btn--ghost:hover { background: var(--color-surface-muted); }
+
+.btn--danger { background: var(--color-debit); color: var(--color-text-inverse); }
+.btn--icon { padding: var(--space-2); width: 40px; height: 40px; }
+
+.field { display: flex; flex-direction: column; gap: var(--space-1); }
+.field__label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.field__hint { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+.input, .select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+}
+.input:focus, .select:focus { border-color: var(--color-accent); outline: none; box-shadow: 0 0 0 3px var(--color-accent-soft); }
+.input:disabled, .select:disabled { background: var(--color-surface-muted); cursor: not-allowed; }
+.select { appearance: none; padding-inline-end: var(--space-5); }
+
+.table-wrapper { width: 100%; overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+.table caption { text-align: start; padding: var(--space-3) 0; color: var(--color-text-muted); font-size: var(--font-size-xs); }
+.table th, .table td { padding: var(--space-3); border-block-end: 1px solid var(--color-border); text-align: start; }
+.table th { background: var(--color-surface-muted); font-weight: var(--font-weight-medium); white-space: nowrap; }
+.table tbody tr:hover { background: var(--color-surface-muted); }
+.table--numeric td, .table--numeric th { font-variant-numeric: tabular-nums; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.badge--credit { background: var(--color-credit-soft); color: var(--color-credit); }
+.badge--debit { background: var(--color-debit-soft); color: var(--color-debit); }
+.badge--cash { background: var(--color-cash-soft); color: var(--color-cash); }
+.badge--noncash { background: var(--color-noncash-soft); color: var(--color-noncash); }
+.badge--positive { background: var(--color-positive-soft); color: var(--color-positive); }
+.badge--negative { background: var(--color-negative-soft); color: var(--color-negative); }
+.badge--cancelled { background: var(--color-cancelled-soft); color: var(--color-cancelled); text-decoration: line-through; }
+
+.alert {
+  display: flex; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  font-size: var(--font-size-sm);
+}
+.alert__title { font-weight: var(--font-weight-medium); }
+.alert--info { background: var(--color-alert-info-soft); border-color: var(--color-alert-info); }
+.alert--success { background: var(--color-alert-success-soft); border-color: var(--color-alert-success); }
+.alert--warning { background: var(--color-alert-warning-soft); border-color: var(--color-alert-warning); }
+.alert--danger { background: var(--color-alert-danger-soft); border-color: var(--color-alert-danger); }
+
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(29, 39, 51, 0.45);
+  display: grid; place-items: center;
+  padding: var(--space-4);
+  z-index: 60;
+}
+.modal {
+  width: min(560px, 100%);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal__header { padding: var(--space-4) var(--space-5); border-block-end: 1px solid var(--color-border); }
+.modal__body { padding: var(--space-5); }
+.modal__footer { padding: var(--space-4) var(--space-5); border-block-start: 1px solid var(--color-border); display: flex; justify-content: flex-end; gap: var(--space-3); }
+
+.state {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-3);
+  padding: var(--space-7) var(--space-5);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+.state__icon { font-size: 2rem; }
+.state__title { color: var(--color-text); font-weight: var(--font-weight-medium); }
+.state--error .state__title { color: var(--color-debit); }
+
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid var(--color-border);
+  border-block-start-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2400ms; } }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-muted), var(--color-border), var(--color-surface-muted));
+  border-radius: var(--radius-sm);
+  height: 14px;
+}
+
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); margin-block-end: var(--space-5); }
+.page-header__description { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.page-section { margin-block-end: var(--space-5); }
+
+.kpi { display: flex; flex-direction: column; gap: var(--space-1); }
+.kpi__label { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.kpi__value { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------------------
+   Phase 4B.1 — ADDITIVE screen styles (customers list, toolbar, form, status).
+   No existing rule above is modified. Financial colour meanings are unchanged.
+   --------------------------------------------------------------------------- */
+.btn--sm { padding: 2px var(--space-2); font-size: var(--font-size-xs); }
+
+.badge--status-active { background: var(--color-primary-soft); color: var(--color-primary); }
+.badge--status-inactive { background: var(--color-surface-muted); color: var(--color-text-muted); }
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+}
+.toolbar__count { font-size: var(--font-size-xs); color: var(--color-text-muted); margin-block-end: var(--space-2); }
+
+.table__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.customer-code { font-variant-numeric: tabular-nums; font-weight: var(--font-weight-medium); }
+.customer-link { color: var(--color-accent); font-weight: var(--font-weight-medium); }
+.customer-name--missing { color: var(--color-alert-warning); font-size: var(--font-size-xs); }
+
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.form-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-block-start: var(--space-5); }
+
+.field__error { color: var(--color-alert-danger); font-size: var(--font-size-xs); }
+.input[aria-invalid="true"], .select[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--color-alert-danger); }
+
+textarea.input { resize: vertical; min-height: 72px; font-family: inherit; }
+
+@media (max-width: 820px) {
+  .form-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ===== financial.css ===== */
+/* Financial visual language — presentation classes only.
+   They carry no financial rule, calculation or direction decision. */
+.amount { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.amount--credit { color: var(--color-credit); }
+.amount--debit { color: var(--color-debit); }
+.amount--cash-in { color: var(--color-cash); }
+.amount--cash-out { color: var(--color-cash); }
+.amount--noncash { color: var(--color-noncash); }
+.amount--positive { color: var(--color-positive); font-weight: var(--font-weight-medium); }
+.amount--negative { color: var(--color-negative); font-weight: var(--font-weight-medium); }
+.amount--zero { color: var(--color-text-muted); }
+.amount--cancelled { color: var(--color-cancelled); text-decoration: line-through; }
+
+.ledger-row--cancelled { opacity: 0.6; }
+
+.marker { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-inline-end: var(--space-2); }
+.marker--credit { background: var(--color-credit); }
+.marker--debit { background: var(--color-debit); }
+.marker--cash { background: var(--color-cash); }
+.marker--noncash { background: var(--color-noncash); }
+.marker--cancelled { background: var(--color-cancelled); }
+
+.financial-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+.preview-banner { padding: var(--space-3) var(--space-4); background: var(--color-alert-warning-soft); border-bottom: 1px solid var(--color-alert-warning); font-size: var(--font-size-xs); }
+</style>
+</head>
+<body>
+<div class="preview-banner">صفحة مراجعة: البيانات أدناه مُنتَجة بتشغيل طبقة الخدمات على قاعدة تجريبية مؤقتة داخل أداة اللقطة، ولا توجد أي بيانات تجريبية داخل التطبيق.</div>
+<div class="app-shell" data-sidebar="closed"data-route="customers-new">
+<aside class="app-sidebar" id="app-sidebar" aria-label="حسابات العملاء">
+<div class="app-sidebar__brand">
+  <span class="app-sidebar__logo" aria-hidden="true">ح</span>
+  <span class="app-sidebar__title"><strong>حسابات العملاء</strong><span>تطبيق محلي يعمل دون اتصال</span></span>
+</div>
+<nav class="app-nav" aria-label="التنقل الرئيسي"><div class="app-nav__group">
+  <div class="app-nav__group-title">نظرة عامة</div>
+<a class="app-nav__link" href="#/dashboard" data-route-id="dashboard">
+  <span class="app-nav__icon" aria-hidden="true">🏠</span>
+  <span>لوحة التحكم</span>
+</a>
+</div>
+<div class="app-nav__group">
+  <div class="app-nav__group-title">العمليات اليومية</div>
+<a class="app-nav__link" href="#/customers" data-route-id="customers" aria-current="page">
+  <span class="app-nav__icon" aria-hidden="true">👥</span>
+  <span>العملاء</span>
+</a>
+<a class="app-nav__link" href="#/transactions" data-route-id="transactions">
+  <span class="app-nav__icon" aria-hidden="true">🧾</span>
+  <span>الحركات</span>
+</a>
+<a class="app-nav__link" href="#/crop-purchases" data-route-id="crop-purchases">
+  <span class="app-nav__icon" aria-hidden="true">🌾</span>
+  <span>مشتريات المحصول</span>
+</a>
+<a class="app-nav__link" href="#/payments" data-route-id="payments">
+  <span class="app-nav__icon" aria-hidden="true">💵</span>
+  <span>المدفوعات</span>
+</a>
+<a class="app-nav__link" href="#/settlements" data-route-id="settlements">
+  <span class="app-nav__icon" aria-hidden="true">🤝</span>
+  <span>التسويات</span>
+</a>
+</div>
+<div class="app-nav__group">
+  <div class="app-nav__group-title">التحليل</div>
+<a class="app-nav__link" href="#/reports" data-route-id="reports">
+  <span class="app-nav__icon" aria-hidden="true">📊</span>
+  <span>التقارير</span>
+</a>
+</div>
+<div class="app-nav__group">
+  <div class="app-nav__group-title">النظام</div>
+<a class="app-nav__link" href="#/settings" data-route-id="settings">
+  <span class="app-nav__icon" aria-hidden="true">⚙️</span>
+  <span>الإعدادات</span>
+</a>
+<a class="app-nav__link" href="#/import" data-route-id="import">
+  <span class="app-nav__icon" aria-hidden="true">📥</span>
+  <span>الاستيراد من Excel</span>
+</a>
+<a class="app-nav__link" href="#/backup" data-route-id="backup">
+  <span class="app-nav__icon" aria-hidden="true">💾</span>
+  <span>النسخ الاحتياطي والاستعادة</span>
+</a>
+</div></nav>
+</aside>
+<div class="app-main">
+<header class="app-header">
+  <button class="btn btn--icon btn--ghost sidebar-toggle" type="button" data-sidebar-toggle aria-controls="app-sidebar" aria-expanded="false">
+    <span aria-hidden="true">☰</span><span class="visually-hidden">إظهار/إخفاء القائمة</span>
+  </button>
+  <div class="app-header__titles">
+    <h1>إضافة عميل</h1>
+    <span class="app-header__subtitle">إنشاء عميل جديد بكود فريد</span>
+  </div>
+  <div class="app-header__actions">
+    <span class="badge">الوزن الافتراضي للعبوة: 14 كجم</span>
+  </div>
+</header>
+<main class="app-content" id="app-content" tabindex="-1"><section class="card">
+  <header class="card__header"><h3 class="card__title">بيانات العميل الجديد</h3></header>
+  <div class="card__body"><form class="customer-form" data-mode="create" novalidate>
+  <div class="form-grid">
+    <div class="field">
+  <label class="field__label" for="customer-code">كود *</label>
+  <input class="input" id="customer-code" name="Code" type="text" value="" required>
+  <span class="field__hint">مطلوب، ويجب ألا يتكرر مع عميل آخر.</span>
+  
+</div>
+    <div class="field">
+  <label class="field__label" for="customer-name">الاسم *</label>
+  <input class="input" id="customer-name" name="Name" type="text" value="" required>
+  
+  
+</div>
+    <div class="field">
+  <label class="field__label" for="customer-phone">الهاتف</label>
+  <input class="input" id="customer-phone" name="Phone" type="text" value="">
+  <span class="field__hint">اختياري.</span>
+  
+</div>
+    <div class="field">
+  <label class="field__label" for="customer-region">المنطقة</label>
+  <input class="input" id="customer-region" name="Region" type="text" value="">
+  <span class="field__hint">اختياري.</span>
+  
+</div>
+    <div class="field">
+  <label class="field__label" for="customer-notes">ملاحظات</label>
+  <textarea class="input" id="customer-notes" name="Notes" rows="3"></textarea>
+  <span class="field__hint">اختياري.</span>
+  
+</div>
+    <div class="field">
+  <label class="field__label" for="customer-opening-balance">الرصيد الافتتاحي</label>
+  <input class="input" id="customer-opening-balance" name="OpeningBalance" type="text" inputmode="decimal" value="">
+  <span class="field__hint">يُخزَّن كرصيد افتتاحي مستقل ولا يُسجَّل كحركة.</span>
+  
+</div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn--primary" type="submit">حفظ العميل</button>
+    <button class="btn btn--outline" type="button" data-action="cancel">إلغاء</button>
+  </div>
+</form></div>
+
+</section></main>
+</div>
+<div class="app-backdrop" data-sidebar-close aria-hidden="true"></div>
+</div>
+</body>
+</html>
